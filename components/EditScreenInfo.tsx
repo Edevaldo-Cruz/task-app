@@ -1,46 +1,20 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { ExternalLink } from './ExternalLink';
-import { MonoText } from './StyledText';
-import { Text, View } from './Themed';
+import { ExternalLink } from "./ExternalLink";
+import { MonoText } from "./StyledText";
+import { Text, View } from "./Themed";
 
-import Colors from '@/constants/Colors';
+import Colors from "@/constants/Colors";
+import TaskCard from "./taskCard";
 
 export default function EditScreenInfo({ path }: { path: string }) {
   return (
     <View>
       <View style={styles.getStartedContainer}>
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Open up the code for this screen:
-        </Text>
+        <Text style={styles.getStartedText}>Tarefas:</Text>
 
-        <View
-          style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-          darkColor="rgba(255,255,255,0.05)"
-          lightColor="rgba(0,0,0,0.05)">
-          <MonoText>{path}</MonoText>
-        </View>
-
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Change any of the text, save the file, and your app will automatically update.
-        </Text>
-      </View>
-
-      <View style={styles.helpContainer}>
-        <ExternalLink
-          style={styles.helpLink}
-          href="https://docs.expo.io/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet">
-          <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
-            Tap here if your app doesn't automatically update after making changes
-          </Text>
-        </ExternalLink>
+        <TaskCard />
       </View>
     </View>
   );
@@ -48,9 +22,47 @@ export default function EditScreenInfo({ path }: { path: string }) {
 
 const styles = StyleSheet.create({
   getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+    height: "90%",
+    paddingInline: 20,
+    paddingTop: 15,
+
+    borderTopStartRadius: 40,
+    borderTopEndRadius: 40,
+    backgroundColor: "#ededf0",
+    top: -40,
+    zIndex: 1,
   },
+  card: {
+    height: 80,
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    marginVertical: 10,
+    padding: 10,
+  },
+  cardNameTask: {
+    flexDirection: "row",
+    //justifyContent: "space-between",
+    alignItems: "center",
+    height: "80%",
+    width: "10%",
+    backgroundColor: "#191830",
+    borderRadius: 14,
+    gap: 10,
+  },
+  cardText: {
+    fontSize: 20,
+    color: "#ffffff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  containerTextcard: {
+    alignItems: "center",
+    width: 250,
+    backgroundColor: "#CCC",
+    marginLeft: 10,
+  },
+
   homeScreenFilename: {
     marginVertical: 7,
   },
@@ -61,17 +73,17 @@ const styles = StyleSheet.create({
   getStartedText: {
     fontSize: 17,
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: "left",
   },
   helpContainer: {
     marginTop: 15,
     marginHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   helpLink: {
     paddingVertical: 15,
   },
   helpLinkText: {
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
