@@ -6,11 +6,12 @@ import {
   TextInput,
   View,
   Alert,
+  Task,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/Themed";
-import EditScreenInfo from "@/components/EditScreenInfo";
 import * as SQLite from "expo-sqlite";
+import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -28,6 +29,7 @@ const initializeDB = () => {
 };
 
 export default function TabOneScreen() {
+  const [tarefas, setTarefas] = useState<Tarefas[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -36,7 +38,8 @@ export default function TabOneScreen() {
 
   const loadTasks = () => {
     try {
-      const result = db.execSync("SELECT * FROM tarefas");
+      const result = db.getAllSync<Tarefas>("SELECT * FROM tarefas");
+      setTarefas(result);
       console.log("Tarefas carregadas: ", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
@@ -101,7 +104,10 @@ export default function TabOneScreen() {
     <View style={styles.Content}>
       <View style={styles.container}>
         <View style={styles.containerTitle}>
-          <Text style={styles.title}>Nova tarefa</Text>
+          <View>
+            <Text style={styles.title}>Nova tarefa</Text>
+            <Text style={styles.subtitle}>Quem planeja, realiza!</Text>
+          </View>
           <TouchableOpacity
             style={styles.botaoNovaTarefa}
             onPress={() => setModalVisible(true)}
@@ -110,7 +116,7 @@ export default function TabOneScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <TaskContainer tarefas={tarefas} loadTasks={loadTasks} />
 
       <Modal
         visible={modalVisible}
@@ -179,6 +185,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "semibold",
+    color: "#fff",
+    marginTop: 15,
   },
   containerTitle: {
     flexDirection: "row",
