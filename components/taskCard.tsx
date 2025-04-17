@@ -84,23 +84,21 @@ export default function TaskCard({
     }
   };
 
-  const renderRightActions = () => (
-    <TouchableOpacity
-      style={styles.swipeRight}
-      onPress={() => setShowDeleteModal(true)}
-    >
-      <Ionicons name="trash-outline" size={28} color="#fff" />
-    </TouchableOpacity>
-  );
+  const updateTaskStatus = (taskId: number, newStatus: string) => {
+    try {
+      const statusEscaped = escapeString(newStatus);
 
-  const renderLeftActions = () => (
-    <TouchableOpacity
-      style={styles.swipeLeft}
-      onPress={() => setShowEditModal(true)}
-    >
-      <Ionicons name="create-outline" size={28} color="#fff" />
-    </TouchableOpacity>
-  );
+      const query = `UPDATE tarefas SET status = ${statusEscaped} WHERE id = ${taskId};`;
+
+      db.execSync(query);
+
+      onUpdate();
+      Alert.alert("Sucesso", `Status atualizado para ${newStatus}`);
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+      Alert.alert("Erro", "Falha ao atualizar status");
+    }
+  };
 
   return (
     <>
@@ -133,7 +131,7 @@ export default function TaskCard({
               </View>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => console.log("Marcar como concluída", task.id)}
+                onPress={() => updateTaskStatus(task.id, "iniciada")}
               >
                 <Ionicons name="checkmark-circle" size={24} color="#fff" />
               </TouchableOpacity>

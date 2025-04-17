@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/Themed";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
+import { usePathname } from "expo-router";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -35,10 +36,17 @@ export default function TabOneScreen() {
   const [descricao, setDescricao] = useState("");
   const [horario, setHorario] = useState("");
   const [localizacao, setLocalizacao] = useState("");
+  const pathname = usePathname();
 
   const loadTasks = () => {
     try {
-      const result = db.getAllSync<Tarefas>("SELECT * FROM tarefas");
+      const isIndex = pathname === "/";
+
+      const query = isIndex
+        ? "SELECT * FROM tarefas WHERE status = 'pendente'"
+        : "SELECT * FROM tarefas";
+
+      const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
       console.log("Tarefas carregadas: ", result);
     } catch (error) {
@@ -76,22 +84,6 @@ export default function TabOneScreen() {
     } catch (error) {
       console.log("Erro ao criar tarefa: ", error);
       Alert.alert("Erro", "Houve um problema ao criar a tarefa.");
-    }
-  };
-
-  const updateTaskStatus = (taskId: number, newStatus: string) => {
-    try {
-      const statusEscaped = escapeString(newStatus);
-
-      const query = `UPDATE tarefas SET status = ${statusEscaped} WHERE id = ${taskId};`;
-
-      db.execSync(query);
-
-      loadTasks();
-      Alert.alert("Sucesso", `Status atualizado para ${newStatus}`);
-    } catch (error) {
-      console.error("Erro ao atualizar status:", error);
-      Alert.alert("Erro", "Falha ao atualizar status");
     }
   };
 
