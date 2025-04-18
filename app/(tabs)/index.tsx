@@ -86,6 +86,28 @@ export default function TabOneScreen() {
   };
 
   const handleCreateTask = () => {
+    if (!titulo || !data || !horario) {
+      Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
+    }
+
+    const dataAtual = new Date().toISOString().split("T")[0];
+    const agora = new Date();
+    const horaAtual = agora.getHours();
+    const minutoAtual = agora.getMinutes();
+
+    const [horaSelecionada, minutoSelecionado] = horario.split(":").map(Number);
+
+    if (
+      data <= dataAtual &&
+      (horaSelecionada < horaAtual ||
+        (horaSelecionada === horaAtual && minutoSelecionado < minutoAtual))
+    ) {
+      Alert.alert(
+        "Erro",
+        "Selecione um horário ou uma data futuro para criar uma nova tarefa."
+      );
+      return;
+    }
     try {
       const query = `
       INSERT INTO tarefas (titulo, descricao, horario, data, status)
