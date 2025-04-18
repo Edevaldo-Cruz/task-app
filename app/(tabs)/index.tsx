@@ -7,12 +7,14 @@ import {
   View,
   Alert,
   Task,
+  Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Text } from "@/components/Themed";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
 import { usePathname } from "expo-router";
+import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
+import { en, registerTranslation } from "react-native-paper-dates";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -22,8 +24,8 @@ const initializeDB = () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo TEXT,
       descricao TEXT,
-      horario TEXT,
-      localizacao TEXT,
+       data TEXT,
+      horario TEXT,     
       status TEXT DEFAULT 'pendente' CHECK(status IN ('pendente', 'iniciada', 'finalizada', 'cancelada'))
     );
   `);
@@ -35,8 +37,26 @@ export default function TabOneScreen() {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [horario, setHorario] = useState("");
-  const [localizacao, setLocalizacao] = useState("");
+  const [data, setData] = useState("");
   const pathname = usePathname();
+
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [time, setTime] = useState(new Date());
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [openTimePicker, setOpenTimePicker] = useState(false);
+
+  const formatarDataBrasileira = (dateString: string) => {
+    if (!dateString) return "Selecione a data";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR");
+  };
+
+  const formatarHora = (timeString: string) => {
+    if (!timeString) return "Selecione a hora";
+    return timeString;
+  };
 
   const loadTasks = () => {
     try {
@@ -58,15 +78,22 @@ export default function TabOneScreen() {
     return `'${value.replace(/'/g, "''")}'`;
   };
 
+  const resetForm = () => {
+    setTitulo("");
+    setDescricao("");
+    setHorario("");
+    setData("");
+  };
+
   const handleCreateTask = () => {
     try {
       const query = `
-      INSERT INTO tarefas (titulo, descricao, horario, localizacao, status)
+      INSERT INTO tarefas (titulo, descricao, horario, data, status)
       VALUES (
         ${escapeString(titulo)},
         ${escapeString(descricao)},
         ${escapeString(horario)},
-        ${escapeString(localizacao)},
+        ${escapeString(data)},
         'pendente'
       );
     `;
@@ -79,7 +106,7 @@ export default function TabOneScreen() {
       setTitulo("");
       setDescricao("");
       setHorario("");
-      setLocalizacao("");
+      setData("");
       Alert.alert("Sucesso", "Tarefa criada com sucesso!");
     } catch (error) {
       console.log("Erro ao criar tarefa: ", error);
@@ -120,43 +147,102 @@ export default function TabOneScreen() {
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Criar Nova Tarefa</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Título"
-              value={titulo}
-              onChangeText={setTitulo}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Descrição"
-              value={descricao}
-              onChangeText={setDescricao}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Horário"
-              value={horario}
-              onChangeText={setHorario}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Localização"
-              value={localizacao}
-              onChangeText={setLocalizacao}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Título*</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite o título da tarefa"
+                value={titulo}
+                onChangeText={setTitulo}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Descrição</Text>
+              <TextInput
+                style={[styles.input, styles.multilineInput]}
+                placeholder="Descreva sua tarefa"
+                value={descricao}
+                onChangeText={setDescricao}
+                multiline
+              />
+            </View>
+
+            <View style={styles.datetimeContainer}>
+              <View style={[styles.inputContainer, styles.halfWidth]}>
+                <Text style={styles.label}>Data*</Text>
+                <TouchableOpacity
+                  style={styles.input}
+                  onPress={() => setOpenDatePicker(true)}
+                >
+                  <Text>{formatarDataBrasileira(data)}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={[styles.inputContainer, styles.halfWidth]}>
+                <Text style={styles.label}>Hora*</Text>
+                <TouchableOpacity
+                  style={styles.input}
+                  onPress={() => setOpenTimePicker(true)}
+                >
+                  <Text>{formatarHora(horario)}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <DatePickerModal
+              locale="pt"
+              mode="single"
+              visible={openDatePicker}
+              onDismiss={() => setOpenDatePicker(false)}
+              date={data ? new Date(data) : new Date()}
+              onConfirm={({ date }) => {
+                setOpenDatePicker(false);
+                if (date) {
+                  const formattedDate = date.toISOString().split("T")[0];
+                  setData(formattedDate);
+                }
+              }}
             />
 
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={handleCreateTask}
-            >
-              <Text style={styles.createButtonText}>Criar Tarefa</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Cancelar</Text>
-            </TouchableOpacity>
+            <TimePickerModal
+              locale="pt"
+              visible={openTimePicker}
+              onDismiss={() => setOpenTimePicker(false)}
+              onConfirm={({ hours, minutes }) => {
+                setOpenTimePicker(false);
+                const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+                setHorario(formattedTime);
+              }}
+              hours={
+                horario
+                  ? parseInt(horario.split(":")[0])
+                  : new Date().getHours()
+              }
+              minutes={
+                horario
+                  ? parseInt(horario.split(":")[1])
+                  : new Date().getMinutes()
+              }
+            />
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                  setModalVisible(false);
+                  resetForm();
+                }}
+              >
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateTask}
+              >
+                <Text style={styles.createButtonText}>Criar Tarefa</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -230,6 +316,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
+    display: "flex",
+    justifyContent: "center",
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
@@ -257,5 +345,35 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  inputContainer: {
+    marginBottom: 18,
+    width: "100%",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#333",
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  datetimeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  halfWidth: {
+    width: "48%",
+    marginTop: 18,
+  },
+  multilineInput: {
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 16,
   },
 });

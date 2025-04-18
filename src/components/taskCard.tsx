@@ -26,9 +26,11 @@ type Tarefa = {
 export default function TaskCard({
   tarefa: task,
   onUpdate,
+  inProgress,
 }: {
   tarefa: Tarefa;
   onUpdate: () => void;
+  inProgress?: boolean;
 }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -131,9 +133,18 @@ export default function TaskCard({
               </View>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => updateTaskStatus(task.id, "iniciada")}
+                onPress={() =>
+                  updateTaskStatus(
+                    task.id,
+                    inProgress ? "finalizada" : "iniciada"
+                  )
+                }
               >
-                <Ionicons name="checkmark-circle" size={24} color="#fff" />
+                {inProgress ? (
+                  <Ionicons name="checkmark-circle" size={24} color="#fff" />
+                ) : (
+                  <Ionicons name="play-circle" size={24} color="#fff" />
+                )}
               </TouchableOpacity>
             </View>
           </View>

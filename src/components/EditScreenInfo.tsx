@@ -15,9 +15,10 @@ export type Tarefas = {
 interface TaskContainerProps {
   tarefas: Tarefas[];
   loadTasks: () => void;
+  inProgress?: boolean;
 }
 
-export function TaskContainer({ tarefas, loadTasks }: TaskContainerProps) {
+export function TaskContainer({ tarefas, loadTasks, inProgress }: TaskContainerProps) {
   return (
     <View>
       <View style={styles.getStartedContainer}>
@@ -27,7 +28,7 @@ export function TaskContainer({ tarefas, loadTasks }: TaskContainerProps) {
           data={tarefas}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TaskCard tarefa={item} onUpdate={loadTasks} />
+            <TaskCard tarefa={item} onUpdate={loadTasks} inProgress={inProgress} />
           )}
         />
       </View>
