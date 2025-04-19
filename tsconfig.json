@@ -1,30 +1,12 @@
-// {
-//   "extends": "expo/tsconfig.base",
-//   "compilerOptions": {
-//     "strict": true,
-//     "paths": {
-//       "@/*": [
-//         "./*"
-//       ]
-//     }
-//   },
-//   "include": [
-//     "**/*.ts",
-//     "**/*.tsx",
-//     ".expo/types/**/*.ts",
-//     "expo-env.d.ts"
-//   ]
-// }
-
-
 {
-  //"extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
     "module": "esnext",
     "target": "esnext",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "moduleResolution": "node",
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -34,9 +16,15 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@assets/*": ["./assets/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ]
     },
     "types": [
       "react",
@@ -59,5 +47,6 @@
     "**/*.test.ts",
     "**/__tests__/**",
     "**/__mocks__/**"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
