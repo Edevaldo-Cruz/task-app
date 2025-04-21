@@ -11,6 +11,7 @@ import {
 import { Swipeable } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
+import EditTaskModal from "./EditTask/EditTaskModal";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -19,7 +20,7 @@ type Tarefa = {
   titulo: string;
   descricao: string;
   horario: string;
-  localizacao: string;
+  data: string;
   status: string;
 };
 
@@ -39,10 +40,21 @@ export default function TaskCard({
   const [titulo, setTitulo] = useState(task.titulo);
   const [descricao, setDescricao] = useState(task.descricao);
   const [horario, setHorario] = useState(task.horario);
-  const [localizacao, setLocalizacao] = useState(task.localizacao);
+  const [data, setData] = useState(task.data);
 
   const escapeString = (value: string) => {
     return `'${value.replace(/'/g, "''")}'`;
+  };
+
+  const formatarDataBrasileira = (dateString: string) => {
+    if (!dateString) return "Selecione uma data";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR");
+  };
+
+  const formatarHora = (timeString: string) => {
+    if (!timeString) return "Selecione um horário";
+    return timeString;
   };
 
   const handleEditTask = () => {
@@ -53,7 +65,7 @@ export default function TaskCard({
           titulo = ${escapeString(titulo)},
           descricao = ${escapeString(descricao)},
           horario = ${escapeString(horario)},
-          localizacao = ${escapeString(localizacao)}
+          data = ${escapeString(data)}
         WHERE id = ${task.id};
       `;
 
@@ -126,7 +138,7 @@ export default function TaskCard({
               <View style={styles.taskTextContainer}>
                 <Text style={{ fontWeight: "bold" }}>{task.titulo}</Text>
                 <Text>
-                  {task.horario} - {task.localizacao}
+                  {task.horario} - {task.data}
                 </Text>
                 <Text>{task.descricao}</Text>
               </View>
@@ -177,56 +189,25 @@ export default function TaskCard({
         </View>
       </Modal>
 
-      <Modal
+      <EditTaskModal
         visible={showEditModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowEditModal(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Editar Tarefa</Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Título"
-              value={titulo}
-              onChangeText={setTitulo}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Descrição"
-              value={descricao}
-              onChangeText={setDescricao}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Horário"
-              value={horario}
-              onChangeText={setHorario}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Localização"
-              value={localizacao}
-              onChangeText={setLocalizacao}
-            />
-
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={handleEditTask}
-            >
-              <Text style={styles.createButtonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowEditModal(false)}
-            >
-              <Text style={styles.closeButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowEditModal(false)}
+        onSave={handleEditTask}
+        titulo={titulo}
+        setTitulo={setTitulo}
+        descricao={descricao}
+        setDescricao={setDescricao}
+        data={formatarDataBrasileira(data)}
+        setData={() => {}}
+        horario={horario}
+        setHorario={setHorario}
+        openDatePicker={false}
+        setOpenDatePicker={() => {}}
+        openTimePicker={false}
+        setOpenTimePicker={() => {}}
+        formatarDataBrasileira={(data) => data}
+        formatarHora={(time) => time}
+      />
     </>
   );
 }

@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet, FlatList, Text, View } from "react-native";
-import TaskCard from "./taskCard";
+import TaskCard from "./TaskCard";
 
 export type Tarefas = {
   id: number;
   titulo: string;
   descricao: string;
   horario: string;
-  localizacao: string;
+  data: string;
   status: string;
 };
 
