@@ -1,6 +1,5 @@
 import React from "react";
-import { StyleSheet, FlatList } from "react-native";
-import { Text, View } from "./Themed";
+import { StyleSheet, FlatList, Text, View } from "react-native";
 import TaskCard from "./taskCard";
 
 export type Tarefas = {

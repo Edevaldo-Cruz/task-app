@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
-import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
+import { Tarefas, TaskContainer } from "@/components/TaskContainer";
 import { useFocusEffect, usePathname } from "expo-router";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { registerTranslation } from "react-native-paper-dates";
@@ -349,7 +349,7 @@ export default function TabOneScreen() {
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Criar Nova Tarefa</Text>
-           
+
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Título*</Text>
               <TextInput
