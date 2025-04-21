@@ -20,7 +20,7 @@ const initializeDB = () => {
   `);
 };
 
-export default function TabOneScreen() {
+export default function InProgress() {
   const [tarefas, setTarefas] = useState<Tarefas[]>([]);
 
   const loadTasks = () => {
@@ -44,14 +44,14 @@ export default function TabOneScreen() {
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
-  }, []); 
-  
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       loadTasks2();
 
       return () => console.log("Tela perdeu foco");
-    }, [loadTasks2]) 
+    }, [loadTasks2])
   );
 
   return (

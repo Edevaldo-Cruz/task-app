@@ -19,7 +19,7 @@ const initializeDB = () => {
   `);
 };
 
-export default function TabOneScreen() {
+export default function Finished() {
   const [tarefas, setTarefas] = useState<Tarefas[]>([]);
 
   const loadTasks = () => {
