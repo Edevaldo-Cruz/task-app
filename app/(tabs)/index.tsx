@@ -8,6 +8,7 @@ import {
   Alert,
   Task,
   Text,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
@@ -323,133 +324,136 @@ export default function TabOneScreen() {
   );
 
   return (
-    <View style={styles.Content}>
-      <View style={styles.container}>
-        <View style={styles.containerTitle}>
-          <View>
-            <Text style={styles.title}>Nova tarefa</Text>
-            <Text style={styles.subtitle}>Quem planeja, realiza!</Text>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#fd5ba9" />
+      <View style={styles.Content}>
+        <View style={styles.container}>
+          <View style={styles.containerTitle}>
+            <View>
+              <Text style={styles.title}>Nova tarefa</Text>
+              <Text style={styles.subtitle}>Quem planeja, realiza!</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.botaoNovaTarefa}
+              onPress={() => setModalVisible(true)}
+            >
+              <Ionicons name="add-circle-outline" size={24} color="#FFF" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.botaoNovaTarefa}
-            onPress={() => setModalVisible(true)}
-          >
-            <Ionicons name="add-circle-outline" size={24} color="#FFF" />
-          </TouchableOpacity>
         </View>
-      </View>
-      <TaskContainer tarefas={tarefas} loadTasks={loadTasks} />
+        <TaskContainer tarefas={tarefas} loadTasks={loadTasks} />
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Criar Nova Tarefa</Text>
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Criar Nova Tarefa</Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Título*</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Digite o título da tarefa"
-                value={titulo}
-                onChangeText={setTitulo}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Descrição</Text>
-              <TextInput
-                style={[styles.input, styles.multilineInput]}
-                placeholder="Descreva sua tarefa"
-                value={descricao}
-                onChangeText={setDescricao}
-                multiline
-              />
-            </View>
-
-            <View style={styles.datetimeContainer}>
-              <View style={[styles.inputContainer, styles.halfWidth]}>
-                <Text style={styles.label}>Data*</Text>
-                <TouchableOpacity
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Título*</Text>
+                <TextInput
                   style={styles.input}
-                  onPress={() => setOpenDatePicker(true)}
-                >
-                  <Text>{formatarDataBrasileira(data)}</Text>
-                </TouchableOpacity>
+                  placeholder="Digite o título da tarefa"
+                  value={titulo}
+                  onChangeText={setTitulo}
+                />
               </View>
 
-              <View style={[styles.inputContainer, styles.halfWidth]}>
-                <Text style={styles.label}>Hora*</Text>
-                <TouchableOpacity
-                  style={styles.input}
-                  onPress={() => setOpenTimePicker(true)}
-                >
-                  <Text>{formatarHora(horario)}</Text>
-                </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Descrição</Text>
+                <TextInput
+                  style={[styles.input, styles.multilineInput]}
+                  placeholder="Descreva sua tarefa"
+                  value={descricao}
+                  onChangeText={setDescricao}
+                  multiline
+                />
               </View>
-            </View>
 
-            <DatePickerModal
-              locale="pt"
-              mode="single"
-              visible={openDatePicker}
-              onDismiss={() => setOpenDatePicker(false)}
-              date={data ? new Date(data) : new Date()}
-              onConfirm={({ date }) => {
-                setOpenDatePicker(false);
-                if (date) {
-                  const formattedDate = date.toISOString().split("T")[0];
-                  setData(formattedDate);
-                }
-              }}
-            />
+              <View style={styles.datetimeContainer}>
+                <View style={[styles.inputContainer, styles.halfWidth]}>
+                  <Text style={styles.label}>Data*</Text>
+                  <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setOpenDatePicker(true)}
+                  >
+                    <Text>{formatarDataBrasileira(data)}</Text>
+                  </TouchableOpacity>
+                </View>
 
-            <TimePickerModal
-              locale="pt"
-              visible={openTimePicker}
-              onDismiss={() => setOpenTimePicker(false)}
-              onConfirm={({ hours, minutes }) => {
-                setOpenTimePicker(false);
-                const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-                setHorario(formattedTime);
-              }}
-              hours={
-                horario
-                  ? parseInt(horario.split(":")[0])
-                  : new Date().getHours()
-              }
-              minutes={
-                horario
-                  ? parseInt(horario.split(":")[1])
-                  : new Date().getMinutes()
-              }
-            />
+                <View style={[styles.inputContainer, styles.halfWidth]}>
+                  <Text style={styles.label}>Hora*</Text>
+                  <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setOpenTimePicker(true)}
+                  >
+                    <Text>{formatarHora(horario)}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => {
-                  setModalVisible(false);
-                  resetForm();
+              <DatePickerModal
+                locale="pt"
+                mode="single"
+                visible={openDatePicker}
+                onDismiss={() => setOpenDatePicker(false)}
+                date={data ? new Date(data) : new Date()}
+                onConfirm={({ date }) => {
+                  setOpenDatePicker(false);
+                  if (date) {
+                    const formattedDate = date.toISOString().split("T")[0];
+                    setData(formattedDate);
+                  }
                 }}
-              >
-                <Text style={styles.closeButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.createButton}
-                onPress={handleCreateTask}
-              >
-                <Text style={styles.createButtonText}>Criar Tarefa</Text>
-              </TouchableOpacity>
+              />
+
+              <TimePickerModal
+                locale="pt"
+                visible={openTimePicker}
+                onDismiss={() => setOpenTimePicker(false)}
+                onConfirm={({ hours, minutes }) => {
+                  setOpenTimePicker(false);
+                  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+                  setHorario(formattedTime);
+                }}
+                hours={
+                  horario
+                    ? parseInt(horario.split(":")[0])
+                    : new Date().getHours()
+                }
+                minutes={
+                  horario
+                    ? parseInt(horario.split(":")[1])
+                    : new Date().getMinutes()
+                }
+              />
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => {
+                    setModalVisible(false);
+                    resetForm();
+                  }}
+                >
+                  <Text style={styles.closeButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.createButton}
+                  onPress={handleCreateTask}
+                >
+                  <Text style={styles.createButtonText}>Criar Tarefa</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </>
   );
 }
 const styles = StyleSheet.create({

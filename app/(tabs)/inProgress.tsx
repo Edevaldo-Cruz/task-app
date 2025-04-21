@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/TaskContainer";
 import { useFocusEffect } from "expo-router";
@@ -54,24 +54,27 @@ export default function InProgress() {
   );
 
   return (
-    <View style={styles.Content}>
-      <View style={styles.container}>
-        <View style={styles.containerTitle}>
-          <View>
-            <Text style={styles.title}>Tarefas finalizadas</Text>
-            <Text style={styles.subtitle}>
-              Cada passo te aproxima do seu objetivo. Continue firme, você está
-              no caminho certo!
-            </Text>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#855bfd" />
+      <View style={styles.Content}>
+        <View style={styles.container}>
+          <View style={styles.containerTitle}>
+            <View>
+              <Text style={styles.title}>Tarefas finalizadas</Text>
+              <Text style={styles.subtitle}>
+                Cada passo te aproxima do seu objetivo. Continue firme, você
+                está no caminho certo!
+              </Text>
+            </View>
           </View>
         </View>
+        <TaskContainer
+          inProgress={true}
+          tarefas={tarefas}
+          loadTasks={loadTasks}
+        />
       </View>
-      <TaskContainer
-        inProgress={true}
-        tarefas={tarefas}
-        loadTasks={loadTasks}
-      />
-    </View>
+    </>
   );
 }
 

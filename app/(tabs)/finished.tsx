@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/TaskContainer";
 
@@ -39,25 +39,28 @@ export default function Finished() {
   }, []);
 
   return (
-    <View style={styles.Content}>
-      <View style={styles.container}>
-        <View style={styles.containerTitle}>
-          <View>
-            <Text style={styles.title}>Tarefas finalizadas</Text>
-            <Text style={styles.subtitle}>
-              Parabéns! Mais uma conquista alcançada. O sucesso é a soma dos
-              pequenos esforços diários.
-            </Text>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#05521d" />
+      <View style={styles.Content}>
+        <View style={styles.container}>
+          <View style={styles.containerTitle}>
+            <View>
+              <Text style={styles.title}>Tarefas finalizadas</Text>
+              <Text style={styles.subtitle}>
+                Parabéns! Mais uma conquista alcançada. O sucesso é a soma dos
+                pequenos esforços diários.
+              </Text>
+            </View>
           </View>
         </View>
+        <TaskContainer
+          inProgress={true}
+          tarefas={tarefas}
+          loadTasks={loadTasks}
+          finished={true}
+        />
       </View>
-      <TaskContainer
-        inProgress={true}
-        tarefas={tarefas}
-        loadTasks={loadTasks}
-        finished={true}
-      />
-    </View>
+    </>
   );
 }
 
