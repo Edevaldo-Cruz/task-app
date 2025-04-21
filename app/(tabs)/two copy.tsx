@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Themed";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
@@ -24,7 +21,6 @@ const initializeDB = () => {
 
 export default function TabOneScreen() {
   const [tarefas, setTarefas] = useState<Tarefas[]>([]);
- 
 
   const loadTasks = () => {
     try {
@@ -32,7 +28,7 @@ export default function TabOneScreen() {
 
       const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
-      console.log("Tarefas carregadas: ", result);
+      console.log("Tarefas finalizadas carregadas: ", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
@@ -49,7 +45,10 @@ export default function TabOneScreen() {
         <View style={styles.containerTitle}>
           <View>
             <Text style={styles.title}>Tarefas finalizadas</Text>
-            <Text style={styles.subtitle}>Quem planeja, realiza!</Text>
+            <Text style={styles.subtitle}>
+              Parabéns! Mais uma conquista alcançada. O sucesso é a soma dos
+              pequenos esforços diários.
+            </Text>
           </View>
         </View>
       </View>
@@ -57,6 +56,7 @@ export default function TabOneScreen() {
         inProgress={true}
         tarefas={tarefas}
         loadTasks={loadTasks}
+        finished={true}
       />
     </View>
   );
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   container: {
     height: "20%",
-    backgroundColor: "#855bfd",
+    backgroundColor: "#05521d",
   },
   title: {
     fontSize: 20,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    backgroundColor: "#855bfd",
+    backgroundColor: "#05521d",
   },
   separator: {
     marginVertical: 30,

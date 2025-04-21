@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -27,10 +27,12 @@ export default function TaskCard({
   tarefa: task,
   onUpdate,
   inProgress,
+  finished,
 }: {
   tarefa: Tarefa;
   onUpdate: () => void;
   inProgress?: boolean;
+  finished?: boolean;
 }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -88,17 +90,14 @@ export default function TaskCard({
 
   const updateTaskStatus = (taskId: number, newStatus: string) => {
     try {
-      const statusEscaped = escapeString(newStatus);
-
-      const query = `UPDATE tarefas SET status = ${statusEscaped} WHERE id = ${taskId};`;
-
+      const query = `UPDATE tarefas SET status = '${newStatus}' WHERE id = ${taskId}`;
       db.execSync(query);
 
+      console.log(`Status da tarefa ${taskId} atualizado para ${newStatus}`);
       onUpdate();
-      Alert.alert("Sucesso", `Status atualizado para ${newStatus}`);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
-      Alert.alert("Erro", "Falha ao atualizar status");
+      Alert.alert("Erro", "Não foi possível atualizar o status da tarefa");
     }
   };
 
@@ -131,21 +130,23 @@ export default function TaskCard({
                 </Text>
                 <Text>{task.descricao}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() =>
-                  updateTaskStatus(
-                    task.id,
-                    inProgress ? "finalizada" : "iniciada"
-                  )
-                }
-              >
-                {inProgress ? (
-                  <Ionicons name="checkmark-circle" size={24} color="#fff" />
-                ) : (
-                  <Ionicons name="play-circle" size={24} color="#fff" />
-                )}
-              </TouchableOpacity>
+              {!finished && (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() =>
+                    updateTaskStatus(
+                      task.id,
+                      inProgress ? "finalizada" : "iniciada"
+                    )
+                  }
+                >
+                  {inProgress ? (
+                    <Ionicons name="checkmark-circle" size={24} color="#fff" />
+                  ) : (
+                    <Ionicons name="play-circle" size={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </Swipeable>

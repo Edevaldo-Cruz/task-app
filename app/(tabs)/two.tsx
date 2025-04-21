@@ -1,18 +1,9 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  View,
-  Alert,
-  Task,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Themed";
 import * as SQLite from "expo-sqlite";
 import { Tarefas, TaskContainer } from "@/components/EditScreenInfo";
-import { usePathname } from "expo-router";
+import { useFocusEffect } from "expo-router";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -31,11 +22,6 @@ const initializeDB = () => {
 
 export default function TabOneScreen() {
   const [tarefas, setTarefas] = useState<Tarefas[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [titulo, setTitulo] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [horario, setHorario] = useState("");
-  const [localizacao, setLocalizacao] = useState("");
 
   const loadTasks = () => {
     try {
@@ -43,29 +29,49 @@ export default function TabOneScreen() {
 
       const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
-      console.log("Tarefas carregadas: ", result);
+      console.log("Tarefas finalizada carregadas: ", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
   };
 
-  useEffect(() => {
-    initializeDB();
-    loadTasks();
-  }, []);
+  const loadTasks2 = useCallback(() => {
+    try {
+      const query = "SELECT * FROM tarefas WHERE status = 'iniciada'";
+      const result = db.getAllSync<Tarefas>(query);
+      setTarefas(result);
+      console.log("Tarefas carregadas:", result);
+    } catch (error) {
+      console.error("Erro ao carregar tarefas:", error);
+    }
+  }, []); 
+  
+  useFocusEffect(
+    useCallback(() => {
+      loadTasks2();
+
+      return () => console.log("Tela perdeu foco");
+    }, [loadTasks2]) 
+  );
 
   return (
     <View style={styles.Content}>
       <View style={styles.container}>
         <View style={styles.containerTitle}>
           <View>
-            <Text style={styles.title}>Tarefas em andamento</Text>
-            <Text style={styles.subtitle}>Quem planeja, realiza!</Text>
+            <Text style={styles.title}>Tarefas finalizadas</Text>
+            <Text style={styles.subtitle}>
+              Cada passo te aproxima do seu objetivo. Continue firme, você está
+              no caminho certo!
+            </Text>
           </View>
         </View>
       </View>
-      <TaskContainer inProgress={true} tarefas={tarefas} loadTasks={loadTasks} />
-      
+      <TaskContainer
+        inProgress={true}
+        tarefas={tarefas}
+        loadTasks={loadTasks}
+      />
     </View>
   );
 }
