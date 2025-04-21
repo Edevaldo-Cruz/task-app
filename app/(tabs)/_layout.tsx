@@ -19,7 +19,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="index/index"
         options={{
           title: "Novas Tarefas",
           tabBarLabel: ({ focused }) => (
@@ -37,7 +37,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="inProgress"
+        name="inProgress/index"
         options={{
           title: "Em Andamento",
           tabBarLabel: ({ focused }) => (
@@ -58,7 +58,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="finished"
+        name="finished/index"
         options={{
           title: "Finalizados",
           tabBarLabel: ({ focused }) => (
