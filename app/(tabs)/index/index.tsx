@@ -12,21 +12,23 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
-import { Tarefas, TaskContainer } from "@/components/TaskContainer";
+import * as Notifications from "expo-notifications";
 import { useFocusEffect, usePathname } from "expo-router";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { registerTranslation } from "react-native-paper-dates";
-import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
-import type { DateTriggerInput } from "expo-notifications";
-import { styles } from "./styles";
 
-interface Tarefa {
+import { styles } from "./styles";
+import { Tarefas, TaskContainer } from "@/components/TaskContainer";
+import { scheduleTaskNotification } from "@/Notification/scheduleTaskNotification";
+
+export interface Tarefa {
   id: number;
   titulo: string;
   descricao: string;
   data: string;
   horario: string;
+  notification_id: string;
   status: string;
 }
 const db = SQLite.openDatabaseSync("taskDatabase.db");
@@ -99,50 +101,7 @@ TaskManager.defineTask("TASK_NOTIFICATION", async ({ data, error }) => {
   });
 });
 
-const scheduleTaskNotification = async (task: Tarefa) => {
-  const dateParts = task.data.split("-");
-  const year = parseInt(dateParts[0]);
-  const month = parseInt(dateParts[1]) - 1;
-  0 - 11;
-  const day = parseInt(dateParts[2]);
-
-  const timeParts = task.horario.split(":");
-  const hours = parseInt(timeParts[0]);
-  const minutes = parseInt(timeParts[1]);
-
-  const triggerDate = new Date(year, month, day, hours, minutes);
-
-  if (isNaN(triggerDate.getTime())) {
-    console.error("Data/horário inválidos");
-    return;
-  }
-
-  if (triggerDate <= new Date()) {
-    console.warn("Não é possível agendar notificação para data passada");
-    return;
-  }
-
-  try {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: `Lembrete: ${task.titulo}`,
-        body: task.descricao || "Hora de realizar esta tarefa!",
-        sound: true,
-        data: { taskId: task.id },
-      },
-      trigger: {
-        type: "date",
-        date: triggerDate,
-      } as DateTriggerInput,
-    });
-
-    console.log(`Notificação agendada para ${triggerDate}`);
-  } catch (error) {
-    console.error("Erro ao agendar notificação:", error);
-  }
-};
-
-export default function TabOneScreen() {
+export default function Index() {
   const [tarefas, setTarefas] = useState<Tarefas[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [titulo, setTitulo] = useState("");
@@ -232,14 +191,22 @@ export default function TabOneScreen() {
       );
       const taskId = result[0].id;
 
-      await scheduleTaskNotification({
+      const notificationId = await scheduleTaskNotification({
         id: taskId,
         titulo,
         descricao,
         data,
         horario,
+        notification_id: "",
         status: "pendente",
       });
+
+      const updateQuery = `
+        UPDATE tarefas
+        SET notification_id = ${escapeString(notificationId)}
+        WHERE id = ${taskId};
+      `;
+      db.execSync(updateQuery);
 
       loadTasks();
       setModalVisible(false);
@@ -258,7 +225,8 @@ export default function TabOneScreen() {
         titulo TEXT,
         descricao TEXT,
          data TEXT,
-        horario TEXT,     
+        horario TEXT,
+        notification_id TEXT,     
         status TEXT DEFAULT 'pendente' CHECK(status IN ('pendente', 'iniciada', 'finalizada', 'cancelada'))
       );
     `);
@@ -457,4 +425,3 @@ export default function TabOneScreen() {
     </>
   );
 }
-

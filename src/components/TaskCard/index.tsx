@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  Alert,
-  TextInput,
-} from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import * as SQLite from "expo-sqlite";
-import EditTaskModal from "./EditTask/EditTaskModal";
+
+import { colorsTasks, styles } from "./styles";
+import EditTaskModal from "../EditTask";
+import * as Notifications from "expo-notifications";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -29,11 +24,13 @@ export default function TaskCard({
   onUpdate,
   inProgress,
   finished,
+  index,
 }: {
   tarefa: Tarefa;
   onUpdate: () => void;
   inProgress?: boolean;
   finished?: boolean;
+  index: number;
 }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -50,11 +47,6 @@ export default function TaskCard({
     if (!dateString) return "Selecione uma data";
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR");
-  };
-
-  const formatarHora = (timeString: string) => {
-    if (!timeString) return "Selecione um horário";
-    return timeString;
   };
 
   const handleEditTask = () => {
@@ -81,14 +73,25 @@ export default function TaskCard({
     }
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     try {
-      const query = `
+      const result = db.getFirstSync<{ notification_id: string }>(`
+        SELECT notification_id FROM tarefas WHERE id = ${task.id};
+      `);
+
+      const notificationId = result?.notification_id;
+
+      if (notificationId) {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+        console.log(`Notificação ${notificationId} cancelada com sucesso.`);
+      }
+
+      const deleteQuery = `
         DELETE FROM tarefas
         WHERE id = ${task.id};
       `;
 
-      db.execSync(query);
+      db.execSync(deleteQuery);
 
       console.log("Tarefa excluída com sucesso!");
       setShowDeleteModal(false);
@@ -132,7 +135,12 @@ export default function TaskCard({
         >
           <View style={styles.card}>
             <View style={styles.taskInfo}>
-              <Text style={styles.cardText}>
+              <Text
+                style={[
+                  styles.cardText,
+                  { backgroundColor: colorsTasks[index % colorsTasks.length] },
+                ]}
+              >
                 {task.titulo.slice(0, 2).toUpperCase()}
               </Text>
               <View style={styles.taskTextContainer}>
@@ -211,131 +219,3 @@ export default function TaskCard({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#f0f0f0",
-    marginVertical: 8,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  taskInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 90,
-    paddingHorizontal: 10,
-    backgroundColor: "#FFF",
-    borderRadius: 14,
-  },
-  cardText: {
-    fontSize: 20,
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: "#333",
-    textAlignVertical: "center",
-    marginRight: 10,
-  },
-  taskTextContainer: {
-    flex: 1,
-  },
-  editButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 8,
-    marginLeft: 5,
-  },
-  swipeRight: {
-    backgroundColor: "#f44336",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 80,
-  },
-  swipeLeft: {
-    backgroundColor: "#2196F3",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 80,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "#000000aa",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-    width: "80%",
-    alignItems: "center",
-  },
-  modalButtonDelete: {
-    backgroundColor: "#f44336",
-    padding: 10,
-    borderRadius: 8,
-    minWidth: 80,
-    alignItems: "center",
-  },
-  modalButtonEdit: {
-    backgroundColor: "#2196F3",
-    padding: 10,
-    borderRadius: 8,
-    minWidth: 120,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  modalButtonCancel: {
-    backgroundColor: "#e0e0e0",
-    padding: 10,
-    borderRadius: 8,
-    minWidth: 80,
-    alignItems: "center",
-  },
-  input: {
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  createButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 10,
-  },
-  createButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  closeButton: {
-    backgroundColor: "#e0e0e0",
-    padding: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    width: "100%",
-  },
-  closeButtonText: {
-    color: "#333",
-    fontWeight: "bold",
-  },
-});

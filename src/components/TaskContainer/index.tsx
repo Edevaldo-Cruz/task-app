@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, FlatList, Text, View } from "react-native";
-import TaskCard from "./TaskCard";
+import { FlatList, Text, View } from "react-native";
+import TaskCard from "../TaskCard";
+import { styles } from "./styles";
 
 export type Tarefas = {
   id: number;
@@ -32,12 +33,13 @@ export function TaskContainer({
         <FlatList
           data={tarefas}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <TaskCard
               tarefa={item}
               onUpdate={loadTasks}
               inProgress={inProgress}
               finished={finished}
+              index={index}
             />
           )}
         />
@@ -45,21 +47,3 @@ export function TaskContainer({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  getStartedContainer: {
-    height: "90%",
-    paddingInline: 20,
-    paddingTop: 15,
-    borderTopStartRadius: 40,
-    borderTopEndRadius: 40,
-    backgroundColor: "#ededf0",
-    top: -40,
-    zIndex: 1,
-  },
-  getStartedText: {
-    fontSize: 17,
-    lineHeight: 24,
-    textAlign: "left",
-  },
-});
