@@ -146,11 +146,11 @@ export default function TaskCard({
               <View style={styles.taskTextContainer}>
                 <Text style={{ fontWeight: "bold" }}>{task.titulo}</Text>
                 <Text>
-                  {task.horario} - {task.data}
+                  {task.horario} - {formatarDataBrasileira(task.data)}
                 </Text>
                 <Text>{task.descricao}</Text>
               </View>
-              {!finished && (
+              {!finished ? (
                 <TouchableOpacity
                   style={styles.editButton}
                   onPress={() =>
@@ -166,6 +166,10 @@ export default function TaskCard({
                     <Ionicons name="play-circle" size={24} color="#fff" />
                   )}
                 </TouchableOpacity>
+              ) : (
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>Concluido</Text>
+                </View>
               )}
             </View>
           </View>

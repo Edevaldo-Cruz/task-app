@@ -28,7 +28,13 @@ export function TaskContainer({
   return (
     <View>
       <View style={styles.getStartedContainer}>
-        <Text style={styles.getStartedText}>Tarefas pendentes:</Text>
+        <Text style={styles.getStartedText}>
+          {inProgress
+            ? "Tarefas em andamento:"
+            : finished
+              ? "Tarefas finalizadas:"
+              : "Tarefas pendentes:"}
+        </Text>
 
         <FlatList
           data={tarefas}

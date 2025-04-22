@@ -136,4 +136,15 @@ export const styles = StyleSheet.create({
     color: "#333",
     fontWeight: "bold",
   },
+
+  tag: {
+    backgroundColor: "#4CAF50",
+    padding: 5,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  tagText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });

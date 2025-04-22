@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import * as SQLite from "expo-sqlite";
-import { Tarefas, TaskContainer } from "@/components/TaskContainer";
+
 import { styles } from "./styles";
+import { Tarefas, TaskContainer } from "@/components/TaskContainer";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
