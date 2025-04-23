@@ -40,9 +40,7 @@ export const scheduleTaskNotification = async (
       } as DateTriggerInput,
     });
 
-    console.log(
-      `Notificação agendada para ${triggerDate} com ID ${notificationId}`
-    );
+   
 
     return notificationId;
   } catch (error) {

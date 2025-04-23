@@ -134,7 +134,6 @@ export default function Index() {
 
       const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
-      console.log("Tarefas carregadas xxii: ", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
@@ -243,7 +242,7 @@ export default function Index() {
 
     const notificationResponseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Usuário interagiu com a notificação:", response);
+        
       });
 
     const requestPermissions = async () => {
@@ -283,18 +282,21 @@ export default function Index() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("Tela recebeu foco - recarregando tarefas");
       loadTasks();
+      return;
+    }, [])
+  );
 
-      return () => {
-        console.log("Tela perdeu foco");
-      };
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('dark-content');
+      StatusBar.setBackgroundColor('#fd5ba9');
     }, [])
   );
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#fd5ba9" />
+      {/* <StatusBar barStyle="light-content" backgroundColor="fd5ba9" /> */}
       <View style={styles.Content}>
         <View style={styles.container}>
           <View style={styles.containerTitle}>

@@ -63,7 +63,6 @@ export default function TaskCard({
 
       db.execSync(query);
 
-      console.log("Tarefa atualizada com sucesso!");
       setShowEditModal(false);
       Alert.alert("Sucesso", "Tarefa atualizada com sucesso!");
       onUpdate();
@@ -93,7 +92,6 @@ export default function TaskCard({
 
       db.execSync(deleteQuery);
 
-      console.log("Tarefa excluída com sucesso!");
       setShowDeleteModal(false);
       Alert.alert("Sucesso", "Tarefa excluída com sucesso!");
       onUpdate();
@@ -108,7 +106,7 @@ export default function TaskCard({
       const query = `UPDATE tarefas SET status = '${newStatus}' WHERE id = ${taskId}`;
       db.execSync(query);
 
-      console.log(`Status da tarefa ${taskId} atualizado para ${newStatus}`);
+      
       onUpdate();
     } catch (error) {
       console.error("Erro ao atualizar status:", error);

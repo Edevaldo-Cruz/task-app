@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import * as SQLite from "expo-sqlite";
 
 import { styles } from "./styles";
 import { Tarefas, TaskContainer } from "@/components/TaskContainer";
+import { useFocusEffect } from "expo-router";
 
 const db = SQLite.openDatabaseSync("taskDatabase.db");
 
@@ -28,8 +29,7 @@ export default function Finished() {
       const query = "SELECT * FROM tarefas  WHERE status = 'finalizada'";
 
       const result = db.getAllSync<Tarefas>(query);
-      setTarefas(result);
-      console.log("Tarefas finalizadas carregadas: ", result);
+      setTarefas(result);      
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
@@ -40,9 +40,16 @@ export default function Finished() {
     loadTasks();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor('#05521d');
+    }, [])
+  );
+
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#05521d" />
+      {/* <StatusBar barStyle="light-content" backgroundColor="#05521d" /> */}
       <View style={styles.Content}>
         <View style={styles.container}>
           <View style={styles.containerTitle}>

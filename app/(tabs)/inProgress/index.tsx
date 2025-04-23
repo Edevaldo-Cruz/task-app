@@ -29,7 +29,6 @@ export default function InProgress() {
 
       const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
-      console.log("Tarefas finalizada carregadas: ", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
@@ -40,7 +39,6 @@ export default function InProgress() {
       const query = "SELECT * FROM tarefas WHERE status = 'iniciada'";
       const result = db.getAllSync<Tarefas>(query);
       setTarefas(result);
-      console.log("Tarefas carregadas:", result);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
     }
@@ -49,14 +47,20 @@ export default function InProgress() {
   useFocusEffect(
     useCallback(() => {
       loadTasks2();
-
-      return () => console.log("Tela perdeu foco");
+      return;
     }, [loadTasks2])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle("light-content");
+      StatusBar.setBackgroundColor("#855bfd");
+    }, [])
   );
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#855bfd" />
+      {/* <StatusBar barStyle="light-content" backgroundColor="#855bfd" /> */}
       <View style={styles.Content}>
         <View style={styles.container}>
           <View style={styles.containerTitle}>

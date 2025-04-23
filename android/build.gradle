@@ -1,0 +1,77 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.22'
+
+        ndkVersion = System.getenv("NDK_VERSION") ?: "26.1.10909125"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+         classpath('com.android.tools.build:gradle:8.2.2') 
+        classpath("com.facebook.react:react-native-gradle-plugin:0.74.1") 
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    repositories {
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+        }
+        maven {
+            // Android JSC is installed from npm
+            url(new File(['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), '../dist'))
+        }
+
+        google()
+        mavenCentral()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+
+// Substitua todo o bloco subprojects por este:
+def safeAfterEvaluate(Project project, Closure closure) {
+    if (project.state.executed) {
+        closure.call()
+    } else {
+        project.afterEvaluate(closure)
+    }
+}
+
+allprojects {
+    repositories {
+       
+    }
+    
+    safeAfterEvaluate(project) { proj ->
+        if (proj.hasProperty("android")) {
+            proj.android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+                
+                defaultConfig {
+                    minSdkVersion rootProject.ext.minSdkVersion
+                    targetSdkVersion rootProject.ext.targetSdkVersion
+                }
+            }
+        }
+        
+        proj.configurations.all {
+            resolutionStrategy {
+                force "androidx.core:core-ktx:1.12.0"
+                force "androidx.annotation:annotation:1.7.1"
+            }
+        }
+    }
+}
